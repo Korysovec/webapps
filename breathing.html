@@ -11,8 +11,6 @@
         :root {
             --gloss: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.1) 100%);
             --aero-blue: rgba(135, 206, 250, 0.3);
-            --aero-green: rgba(144, 238, 144, 0.8);
-            --aero-red: rgba(255, 99, 71, 0.8);
         }
 
         html, body {
@@ -180,24 +178,33 @@
             margin-bottom: 4px;
         }
 
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
+        .gradient-top-left {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(at top left, var(--aero-blue) 0%, transparent 50%);
             z-index: -1;
-            opacity: 0.4;
-            animation: float 25s infinite alternate ease-in-out;
-            will-change: transform;
-            backface-visibility: hidden;
+            pointer-events: none;
         }
 
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(120px, 80px) scale(1.2); }
+        .gradient-bottom-right {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(at bottom right, rgba(144, 238, 144, 0.3) 0%, transparent 50%); /* Using a slightly transparent green */
+            z-index: -1;
+            pointer-events: none;
         }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center p-4">
+
+    <div class="gradient-top-left"></div>
+    <div class="gradient-bottom-right"></div>
 
     <!-- Back Button -->
     <a href="index.html" class="glass-panel fixed top-6 left-6 w-12 h-12 rounded-full flex items-center justify-center z-50 transition-all hover:scale-110 active:scale-95 group" title="Zpět na výběr">
@@ -206,9 +213,6 @@
         </svg>
     </a>
 
-    <!-- Background Orbs -->
-    <div class="orb w-96 h-96 bg-blue-300 top-[-10%] left-[-10%]"></div>
-    <div class="orb w-96 h-96 bg-green-200 bottom-[-10%] right-[-10%]" style="animation-delay: -7s;"></div>
 
     <!-- Header Control Bar -->
     <div class="glass-panel rounded-[40px] p-4 flex flex-wrap gap-4 md:gap-8 items-center justify-center mb-12">
@@ -221,7 +225,7 @@
         </div>
         
         <div class="flex flex-col items-center">
-            <span class="label">DRŽENÍ</span>
+            <span class="label">ZADRŽENÍ</span>
             <div class="picker-container" data-type="hold">
                 <div class="picker-wheel" id="wheel-hold"></div>
                 <div class="picker-overlay"></div>
@@ -361,7 +365,7 @@
         function runPhaseIn() {
             if (!isActive) return;
             const duration = wheels.in.value || 1;
-            phaseText.innerText = 'Nádech';
+            phaseText.innerText = 'Nádech nosem';
             bubble.style.transition = `transform ${duration}s linear, background-color 0.8s ease, box-shadow 0.8s ease`;
             bubble.style.backgroundColor = 'rgba(135, 206, 250, 0.5)';
             bubble.style.boxShadow = '0 0 60px rgba(135, 206, 250, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
@@ -373,7 +377,7 @@
             if (!isActive) return;
             const duration = wheels.hold.value;
             if (duration === 0) { runPhaseOut(); return; }
-            phaseText.innerText = 'Držení';
+            phaseText.innerText = 'Zadržet dech';
             bubble.style.transition = 'transform 0.3s ease, background-color 0.8s ease, box-shadow 0.8s ease';
             bubble.style.backgroundColor = 'rgba(74, 222, 128, 0.5)';
             bubble.style.boxShadow = '0 0 60px rgba(74, 222, 128, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
@@ -383,7 +387,7 @@
         function runPhaseOut() {
             if (!isActive) return;
             const duration = wheels.out.value || 1;
-            phaseText.innerText = 'Výdech';
+            phaseText.innerText = 'Výdech pusou';
             bubble.style.transition = `transform ${duration}s linear, background-color 0.8s ease, box-shadow 0.8s ease`;
             bubble.style.backgroundColor = 'rgba(248, 113, 113, 0.5)';
             bubble.style.boxShadow = '0 0 60px rgba(248, 113, 113, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
