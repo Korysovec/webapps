@@ -336,6 +336,12 @@
             const offset = 20 - (w.value * 40); // Center the active number (Container 80px, Item 40px)
             w.element.style.transform = `translateY(${offset}px)`;
             
+            // Haptic feedback (rumble) when selection changes
+            if (w.lastValue !== undefined && w.lastValue !== w.value) {
+                if ('vibrate' in navigator) navigator.vibrate(15);
+            }
+            w.lastValue = w.value;
+
             // Highlight active
             Array.from(w.element.children).forEach((child, idx) => {
                 child.classList.toggle('active', idx === w.value);
@@ -392,7 +398,21 @@
             bubble.style.backgroundColor = 'rgba(248, 113, 113, 0.5)';
             bubble.style.boxShadow = '0 0 60px rgba(248, 113, 113, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
             bubble.style.transform = 'scale(1)';
-            startCountdown(duration, runPhaseIn);
+            startCountdown(duration, runPhaseWait);
+        }
+
+        function runPhaseWait() {
+            if (!isActive) return;
+            phaseText.innerText = 'Pauza';
+            timerText.innerText = '0';
+            // Faster transition for the short 0.5s duration
+            bubble.style.transition = 'background-color 0.4s ease, box-shadow 0.4s ease';
+            bubble.style.backgroundColor = 'rgba(253, 224, 71, 0.5)';
+            bubble.style.boxShadow = '0 0 60px rgba(253, 224, 71, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
+            
+            setTimeout(() => {
+                if (isActive) runPhaseIn();
+            }, 500);
         }
 
         function startCountdown(duration, callback) {
