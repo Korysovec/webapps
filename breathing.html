@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dýchací cvičení</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gloss: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.1) 100%);
+            --aero-blue: rgba(135, 206, 250, 0.3);
+            --aero-green: rgba(144, 238, 144, 0.8);
+            --aero-red: rgba(255, 99, 71, 0.8);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', 'Open Sans', sans-serif;
+            overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=2560') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .glass-panel {
+            background: var(--aero-blue);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 0 15px rgba(255,255,255,0.5);
+            position: relative;
+        }
+
+        .glass-panel::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--gloss);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        /* Scrolling Number Picker */
+        .picker-container {
+            width: 60px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+            cursor: ns-resize;
+            user-select: none;
+        }
+
+        .picker-wheel {
+            position: absolute;
+            width: 100%;
+            transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .picker-number {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #004d7a;
+            opacity: 0.4;
+            transition: opacity 0.2s, font-size 0.2s;
+        }
+
+        .picker-number.active {
+            opacity: 1;
+            font-size: 1.5rem;
+            color: #003355;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+
+        .picker-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, 
+                rgba(255,255,255,0.5) 0%, 
+                transparent 40%, 
+                transparent 60%, 
+                rgba(255,255,255,0.5) 100%);
+            pointer-events: none;
+        }
+
+        .main-bubble {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1s ease-in-out;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 60px rgba(135, 206, 250, 0.5), inset 0 0 40px rgba(255,255,255,0.7);
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7) 0%, rgba(135, 206, 250, 0.3) 50%, rgba(0, 191, 255, 0.4) 100%);
+            z-index: 10;
+        }
+
+        #timer-text {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #005a8d;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+        }
+
+        #phase-text {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #005a8d;
+            font-weight: 600;
+        }
+
+        .btn-bubble {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15), inset 0 0 10px rgba(255,255,255,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-play { background: linear-gradient(135deg, #4ade80, #22c55e); }
+        .btn-stop { background: linear-gradient(135deg, #f87171, #ef4444); }
+
+        .btn-bubble:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .btn-bubble:active { transform: scale(0.95); }
+
+        .play-icon {
+            width: 0; height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 18px solid white;
+            margin-left: 5px;
+            z-index: 2;
+        }
+
+        .stop-icon {
+            width: 18px; height: 18px;
+            background: white;
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        .label {
+            font-weight: 700;
+            color: #002a42;
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 25s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(120px, 80px) scale(1.2); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+
+    <!-- Background Orbs -->
+    <div class="orb w-96 h-96 bg-blue-300 top-[-10%] left-[-10%]"></div>
+    <div class="orb w-96 h-96 bg-green-200 bottom-[-10%] right-[-10%]" style="animation-delay: -7s;"></div>
+
+    <!-- Header Control Bar -->
+    <div class="glass-panel rounded-[40px] p-4 flex flex-wrap gap-4 md:gap-8 items-center justify-center mb-12">
+        <div class="flex flex-col items-center">
+            <span class="label">NÁDECH</span>
+            <div class="picker-container" data-type="in">
+                <div class="picker-wheel" id="wheel-in"></div>
+                <div class="picker-overlay"></div>
+            </div>
+        </div>
+        
+        <div class="flex flex-col items-center">
+            <span class="label">DRŽENÍ</span>
+            <div class="picker-container" data-type="hold">
+                <div class="picker-wheel" id="wheel-hold"></div>
+                <div class="picker-overlay"></div>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center">
+            <span class="label">VÝDECH</span>
+            <div class="picker-container" data-type="out">
+                <div class="picker-wheel" id="wheel-out"></div>
+                <div class="picker-overlay"></div>
+            </div>
+        </div>
+
+        <div class="ml-2">
+            <div id="toggle-btn" class="btn-bubble btn-play">
+                <div id="btn-icon" class="play-icon"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Central Bubble -->
+    <div class="relative flex items-center justify-center">
+        <div id="main-bubble" class="main-bubble glass-panel">
+            <span id="phase-text">Ready</span>
+            <span id="timer-text">0</span>
+        </div>
+    </div>
+
+    <script>
+        const wheels = {
+            in: { element: document.getElementById('wheel-in'), value: 4, max: 20 },
+            hold: { element: document.getElementById('wheel-hold'), value: 4, max: 20 },
+            out: { element: document.getElementById('wheel-out'), value: 4, max: 20 }
+        };
+
+        const bubble = document.getElementById('main-bubble');
+        const timerText = document.getElementById('timer-text');
+        const phaseText = document.getElementById('phase-text');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const btnIcon = document.getElementById('btn-icon');
+
+        let isActive = false;
+        let timerInterval = null;
+
+        // Initialize Wheels
+        function initWheels() {
+            Object.keys(wheels).forEach(key => {
+                const w = wheels[key];
+                for (let i = 0; i <= w.max; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'picker-number';
+                    div.innerText = i;
+                    w.element.appendChild(div);
+                }
+                updateWheelPosition(key);
+                
+                // Mouse wheel/drag support
+                const container = w.element.parentElement;
+                container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    if (e.deltaY > 0) w.value = Math.max(0, w.value - 1);
+                    else w.value = Math.min(w.max, w.value + 1);
+                    updateWheelPosition(key);
+                });
+
+                let startY, startValue;
+                container.addEventListener('mousedown', (e) => {
+                    startY = e.clientY;
+                    startValue = w.value;
+                    const onMouseMove = (moveEvent) => {
+                        const delta = Math.round((startY - moveEvent.clientY) / 40);
+                        w.value = Math.max(0, Math.min(w.max, startValue + delta));
+                        updateWheelPosition(key);
+                    };
+                    const onMouseUp = () => {
+                        window.removeEventListener('mousemove', onMouseMove);
+                        window.removeEventListener('mouseup', onMouseUp);
+                    };
+                    window.addEventListener('mousemove', onMouseMove);
+                    window.addEventListener('mouseup', onMouseUp);
+                });
+            });
+        }
+
+        function updateWheelPosition(key) {
+            const w = wheels[key];
+            const offset = (1 - w.value) * 40; // 1 index padding from top
+            w.element.style.transform = `translateY(${offset}px)`;
+            
+            // Highlight active
+            Array.from(w.element.children).forEach((child, idx) => {
+                child.classList.toggle('active', idx === w.value);
+            });
+        }
+
+        function startBreathing() {
+            if (wheels.in.value === 0 && wheels.out.value === 0) return;
+            isActive = true;
+            toggleBtn.className = 'btn-bubble btn-stop';
+            btnIcon.className = 'stop-icon';
+            runPhaseIn();
+        }
+
+        function stopBreathing() {
+            isActive = false;
+            clearInterval(timerInterval);
+            toggleBtn.className = 'btn-bubble btn-play';
+            btnIcon.className = 'play-icon';
+            bubble.style.transform = 'scale(1)';
+            phaseText.innerText = 'Ready';
+            timerText.innerText = '0';
+        }
+
+        function runPhaseIn() {
+            if (!isActive) return;
+            const duration = wheels.in.value || 1;
+            phaseText.innerText = 'Inhale';
+            bubble.style.transition = `transform ${duration}s linear`;
+            bubble.style.transform = 'scale(1.8)';
+            startCountdown(duration, runPhaseHold);
+        }
+
+        function runPhaseHold() {
+            if (!isActive) return;
+            const duration = wheels.hold.value;
+            if (duration === 0) { runPhaseOut(); return; }
+            phaseText.innerText = 'Hold';
+            bubble.style.transition = 'transform 0.3s ease';
+            startCountdown(duration, runPhaseOut);
+        }
+
+        function runPhaseOut() {
+            if (!isActive) return;
+            const duration = wheels.out.value || 1;
+            phaseText.innerText = 'Exhale';
+            bubble.style.transition = `transform ${duration}s linear`;
+            bubble.style.transform = 'scale(1)';
+            startCountdown(duration, runPhaseIn);
+        }
+
+        function startCountdown(duration, callback) {
+            timerText.innerText = duration;
+            let current = duration;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                current--;
+                timerText.innerText = Math.max(0, current);
+                if (current <= 0) {
+                    clearInterval(timerInterval);
+                    if (isActive) callback();
+                }
+            }, 1000);
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (isActive) stopBreathing();
+            else startBreathing();
+        });
+
+        initWheels();
+    </script>
+</body>
+</html>
