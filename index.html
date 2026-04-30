@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web apps</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gloss: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.1) 100%);
+            --aero-blue: rgba(135, 206, 250, 0.3);
+            --aero-accent: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', 'Open Sans', sans-serif;
+            overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=2560') no-repeat center center fixed;
+            background-size: cover;
+            color: #004d7a;
+        }
+
+        .glass-panel {
+            background: var(--aero-blue);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 0 20px rgba(255,255,255,0.4);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-panel::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--gloss);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        .app-card {
+            width: 280px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 30px;
+            cursor: pointer;
+            group: hover;
+        }
+
+        .app-card:hover {
+            transform: scale(1.05) translateY(-5px);
+            background: rgba(135, 206, 250, 0.5);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.2), inset 0 0 30px rgba(255,255,255,0.6);
+        }
+
+        .app-icon-container {
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #87CEFA 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 0 10px rgba(255,255,255,0.8);
+            position: relative;
+        }
+
+        .app-icon-container::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--gloss);
+            border-radius: inherit;
+        }
+
+        .app-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: float 30s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(150px, 100px) scale(1.3); }
+        }
+
+        .welcome-text {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #ffffff;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 3rem;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center">
+
+    <!-- Background Decoration -->
+    <div class="orb w-[500px] h-[500px] bg-blue-400 top-[-10%] left-[-10%]"></div>
+    <div class="orb w-[400px] h-[400px] bg-green-300 bottom-[-5%] right-[-5%]" style="animation-delay: -10s;"></div>
+    <div class="orb w-[300px] h-[300px] bg-cyan-200 middle top-[40%] right-[20%]" style="animation-delay: -5s;"></div>
+
+    <div class="flex flex-col items-center max-w-4xl px-4">
+        <h1 class="welcome-text text-center">Vyber si cvičení</h1>
+        
+        <div class="flex flex-wrap justify-center gap-8">
+            <!-- Breathing App Link -->
+            <a href="breathing.html" class="glass-panel app-card">
+                <div class="app-icon-container">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="z-index: 1;">
+                        <circle cx="12" cy="12" r="8" stroke="#005a8d" stroke-width="2" />
+                        <circle cx="12" cy="12" r="4" fill="#005a8d" opacity="0.4">
+                            <animate attributeName="r" values="3;6;3" dur="4s" repeatCount="indefinite" />
+                        </circle>
+                    </svg>
+                </div>
+                <span class="app-title">Dýchací cvičení</span>
+            </a>
+
+            <!-- Placeholder for future apps (styled as disabled or coming soon) -->
+            <div class="glass-panel app-card opacity-60 cursor-not-allowed">
+                <div class="app-icon-container grayscale">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="z-index: 1;">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke="#005a8d" stroke-width="2" />
+                        <path d="M12 8V16M8 12H16" stroke="#005a8d" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span class="app-title text-slate-500">Připravujeme</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

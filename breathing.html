@@ -227,7 +227,7 @@
     <!-- Central Bubble -->
     <div class="relative flex items-center justify-center">
         <div id="main-bubble" class="main-bubble glass-panel">
-            <span id="phase-text">Ready</span>
+            <span id="phase-text">Připraven</span>
             <span id="timer-text">0</span>
         </div>
     </div>
@@ -313,14 +313,14 @@
             toggleBtn.className = 'btn-bubble btn-play';
             btnIcon.className = 'play-icon';
             bubble.style.transform = 'scale(1)';
-            phaseText.innerText = 'Ready';
+            phaseText.innerText = 'Připraven';
             timerText.innerText = '0';
         }
 
         function runPhaseIn() {
             if (!isActive) return;
             const duration = wheels.in.value || 1;
-            phaseText.innerText = 'Inhale';
+            phaseText.innerText = 'Nádech';
             bubble.style.transition = `transform ${duration}s linear`;
             bubble.style.transform = 'scale(1.8)';
             startCountdown(duration, runPhaseHold);
@@ -330,7 +330,7 @@
             if (!isActive) return;
             const duration = wheels.hold.value;
             if (duration === 0) { runPhaseOut(); return; }
-            phaseText.innerText = 'Hold';
+            phaseText.innerText = 'Držení';
             bubble.style.transition = 'transform 0.3s ease';
             startCountdown(duration, runPhaseOut);
         }
@@ -338,7 +338,7 @@
         function runPhaseOut() {
             if (!isActive) return;
             const duration = wheels.out.value || 1;
-            phaseText.innerText = 'Exhale';
+            phaseText.innerText = 'Výdech';
             bubble.style.transition = `transform ${duration}s linear`;
             bubble.style.transform = 'scale(1)';
             startCountdown(duration, runPhaseIn);
