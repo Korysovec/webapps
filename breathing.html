@@ -22,6 +22,7 @@
             flex-direction: column;
             font-family: 'Segoe UI', 'Open Sans', sans-serif;
             overflow: hidden;
+            overscroll-behavior: none;
             background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=2560') no-repeat center center fixed;
             background-size: cover;
         }
@@ -55,6 +56,7 @@
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
             cursor: ns-resize;
             user-select: none;
+            touch-action: none;
         }
 
         .picker-wheel {
@@ -88,11 +90,11 @@
         .picker-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, 
-                rgba(255,255,255,0.5) 0%, 
-                transparent 40%, 
-                transparent 60%, 
-                rgba(255,255,255,0.5) 100%);
+            background: linear-gradient(to bottom,
+                rgba(255,255,255,0.7) 0%,
+                rgba(255,255,255,0) 25%,
+                rgba(255,255,255,0) 75%,
+                rgba(255,255,255,0.7) 100%);
             pointer-events: none;
         }
 
@@ -187,6 +189,13 @@
 </head>
 <body class="flex flex-col items-center justify-center p-4">
 
+    <!-- Back Button -->
+    <a href="index.html" class="glass-panel fixed top-6 left-6 w-12 h-12 rounded-full flex items-center justify-center z-50 transition-all hover:scale-110 active:scale-95 group" title="Zpět na výběr">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#004d7a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </a>
+
     <!-- Background Orbs -->
     <div class="orb w-96 h-96 bg-blue-300 top-[-10%] left-[-10%]"></div>
     <div class="orb w-96 h-96 bg-green-200 bottom-[-10%] right-[-10%]" style="animation-delay: -7s;"></div>
@@ -235,8 +244,8 @@
     <script>
         const wheels = {
             in: { element: document.getElementById('wheel-in'), value: 4, max: 20 },
-            hold: { element: document.getElementById('wheel-hold'), value: 4, max: 20 },
-            out: { element: document.getElementById('wheel-out'), value: 4, max: 20 }
+            hold: { element: document.getElementById('wheel-hold'), value: 2, max: 20 },
+            out: { element: document.getElementById('wheel-out'), value: 6, max: 20 }
         };
 
         const bubble = document.getElementById('main-bubble');
@@ -285,12 +294,32 @@
                     window.addEventListener('mousemove', onMouseMove);
                     window.addEventListener('mouseup', onMouseUp);
                 });
+
+                // Touch support
+                container.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].clientY;
+                    startValue = w.value;
+                    
+                    const onTouchMove = (moveEvent) => {
+                        const delta = Math.round((startY - moveEvent.touches[0].clientY) / 40);
+                        w.value = Math.max(0, Math.min(w.max, startValue + delta));
+                        updateWheelPosition(key);
+                    };
+                    
+                    const onTouchEnd = () => {
+                        window.removeEventListener('touchmove', onTouchMove);
+                        window.removeEventListener('touchend', onTouchEnd);
+                    };
+                    
+                    window.addEventListener('touchmove', onTouchMove, { passive: false });
+                    window.addEventListener('touchend', onTouchEnd);
+                });
             });
         }
 
         function updateWheelPosition(key) {
             const w = wheels[key];
-            const offset = (1 - w.value) * 40; // 1 index padding from top
+            const offset = 20 - (w.value * 40); // Center the active number (Container 80px, Item 40px)
             w.element.style.transform = `translateY(${offset}px)`;
             
             // Highlight active
