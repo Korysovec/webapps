@@ -2,8 +2,9 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dýchací cvičení</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -14,14 +15,20 @@
             --aero-red: rgba(255, 99, 71, 0.8);
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed; 
+            touch-action: none; 
+        }
+
+        body {
             display: flex;
             flex-direction: column;
             font-family: 'Segoe UI', 'Open Sans', sans-serif;
-            overflow: hidden;
             overscroll-behavior: none;
             background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=2560') no-repeat center center fixed;
             background-size: cover;
@@ -106,10 +113,11 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: transform 1s ease-in-out;
+            transition: transform 1s ease-in-out, background-color 0.8s ease, box-shadow 0.8s ease;
             border: 2px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 0 60px rgba(135, 206, 250, 0.5), inset 0 0 40px rgba(255,255,255,0.7);
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7) 0%, rgba(135, 206, 250, 0.3) 50%, rgba(0, 191, 255, 0.4) 100%);
+            background-color: rgba(135, 206, 250, 0.3);
+            background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 100%);
             z-index: 10;
         }
 
@@ -179,6 +187,8 @@
             z-index: -1;
             opacity: 0.4;
             animation: float 25s infinite alternate ease-in-out;
+            will-change: transform;
+            backface-visibility: hidden;
         }
 
         @keyframes float {
@@ -342,6 +352,8 @@
             toggleBtn.className = 'btn-bubble btn-play';
             btnIcon.className = 'play-icon';
             bubble.style.transform = 'scale(1)';
+            bubble.style.backgroundColor = 'rgba(135, 206, 250, 0.3)';
+            bubble.style.boxShadow = '0 0 60px rgba(135, 206, 250, 0.5), inset 0 0 40px rgba(255,255,255,0.7)';
             phaseText.innerText = 'Připraven';
             timerText.innerText = '0';
         }
@@ -350,7 +362,9 @@
             if (!isActive) return;
             const duration = wheels.in.value || 1;
             phaseText.innerText = 'Nádech';
-            bubble.style.transition = `transform ${duration}s linear`;
+            bubble.style.transition = `transform ${duration}s linear, background-color 0.8s ease, box-shadow 0.8s ease`;
+            bubble.style.backgroundColor = 'rgba(135, 206, 250, 0.5)';
+            bubble.style.boxShadow = '0 0 60px rgba(135, 206, 250, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
             bubble.style.transform = 'scale(1.8)';
             startCountdown(duration, runPhaseHold);
         }
@@ -360,7 +374,9 @@
             const duration = wheels.hold.value;
             if (duration === 0) { runPhaseOut(); return; }
             phaseText.innerText = 'Držení';
-            bubble.style.transition = 'transform 0.3s ease';
+            bubble.style.transition = 'transform 0.3s ease, background-color 0.8s ease, box-shadow 0.8s ease';
+            bubble.style.backgroundColor = 'rgba(74, 222, 128, 0.5)';
+            bubble.style.boxShadow = '0 0 60px rgba(74, 222, 128, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
             startCountdown(duration, runPhaseOut);
         }
 
@@ -368,7 +384,9 @@
             if (!isActive) return;
             const duration = wheels.out.value || 1;
             phaseText.innerText = 'Výdech';
-            bubble.style.transition = `transform ${duration}s linear`;
+            bubble.style.transition = `transform ${duration}s linear, background-color 0.8s ease, box-shadow 0.8s ease`;
+            bubble.style.backgroundColor = 'rgba(248, 113, 113, 0.5)';
+            bubble.style.boxShadow = '0 0 60px rgba(248, 113, 113, 0.6), inset 0 0 40px rgba(255,255,255,0.7)';
             bubble.style.transform = 'scale(1)';
             startCountdown(duration, runPhaseIn);
         }
