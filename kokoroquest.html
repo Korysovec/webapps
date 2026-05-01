@@ -11,9 +11,20 @@
             --aero-blue: rgba(135, 206, 250, 0.3);
         }
 
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed;
+            touch-action: none; 
+        }
+
         body { 
             font-family: 'Segoe UI', 'Open Sans', sans-serif; 
             background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2560') no-repeat center center fixed;
+            overscroll-behavior: none;
             background-size: cover;
             color: #004d7a;
             overflow: hidden;
