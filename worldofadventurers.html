@@ -66,6 +66,12 @@
                 <span id="display-legacy" class="text-indigo-700"></span>
             </p>
         </div>
+        <div class="content-relative mt-4 md:mt-0">
+            <button onclick="saveProgress()" class="glass-panel px-5 py-2 rounded-full flex items-center gap-2 text-[#004d7a] font-semibold hover:scale-105 active:scale-95 transition-all">
+                <i class="fa-solid fa-floppy-disk text-lg"></i>
+                <span>Save Game</span>
+            </p>
+        </div>
     </header>
 
     <!-- Main Layout Grid -->
@@ -301,6 +307,11 @@
             return true;
         }
 
+        function saveProgress() {
+            localStorage.setItem('worldofadventurers_save', JSON.stringify({ gameState }));
+            addLog(`Progress saved.`);
+        }
+
         // --- Actions ---
         window.buyUpgrade = function(buildingKey) {
             if (!canAffordUpgrade(buildingKey)) return;
@@ -501,6 +512,16 @@
                 `;
             }
             inventoryContainer.innerHTML = invHTML;
+        }
+
+        const saved = localStorage.getItem('worldofadventurers_save');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                if (data.gameState) {
+                    Object.assign(gameState, data.gameState);
+                }
+            } catch (e) { console.error("Error loading save data:", e); }
         }
 
         // --- Init ---
