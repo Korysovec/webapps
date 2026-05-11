@@ -264,7 +264,14 @@
             updateHUD();
         }
 
+        function saveProgress() {
+            localStorage.setItem('kokoro_quest_save', JSON.stringify({ stats, currentNode }));
+        }
+
         function handleChoice(choice) {
+            if (choice.loadStats) {
+                stats = choice.loadStats;
+            }
             if (choice.impact) {
                 stats.courage = Math.min(100, Math.max(0, stats.courage + (choice.impact.courage || 0)));
                 stats.empathy = Math.min(100, Math.max(0, stats.empathy + (choice.impact.empathy || 0)));
@@ -272,6 +279,7 @@
             }
             currentNode = choice.next;
             renderScene(currentNode);
+            saveProgress();
         }
 
         function renderEnding() {
@@ -279,6 +287,8 @@
             if (stats.boundaries < 30) title = "Rohožka";
             else if (stats.empathy < 30) title = "Záporák";
             else if (stats.courage > 70 && stats.boundaries > 70 && stats.empathy > 70) title = "Mistr Komunikace (S Rank)";
+            
+            saveProgress();
 
             document.getElementById('game-container').innerHTML = `
                 <div class="flex flex-col items-center justify-center p-8 text-center h-full fade-in">
@@ -298,6 +308,21 @@
         function createEndingStat(label, val, color) {
             return `<div><div class="flex justify-between text-sm mb-1 font-bold text-[#004d7a]"><span>${label}</span><span>${val}%</span></div>
                     <div class="w-full bg-white/30 h-2 rounded-full"><div class="h-full ${color} rounded-full" style="width:${val}%"></div></div></div>`;
+        }
+
+        // Check for existing save and inject into the intro scene
+        const saved = localStorage.getItem('kokoro_quest_save');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                if (data.currentNode && data.currentNode !== 'intro_1' && data.currentNode !== 'ending') {
+                    storyData['intro_1'].choices.push({ 
+                        text: 'Pokračovat v příběhu', 
+                        next: data.currentNode,
+                        loadStats: data.stats 
+                    });
+                }
+            } catch (e) { console.error("Error loading save data:", e); }
         }
 
         // Start game
